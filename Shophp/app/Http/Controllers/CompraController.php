@@ -27,7 +27,25 @@ class CompraController extends Controller
      */
     public function index()
     {
-        dd($this->objProduto->find(1)->relCompras);
+
+        return view("main_views/list", [
+            'type' => 'compra',
+            'pagename' => 'Listar Compras',
+
+            'objects' => $this->objCompra->addSelect([
+
+                'user' => $this->objUser->select('nome')
+                    ->whereColumn('user.id', 'compra.id_user'),
+                
+                'product' => $this->objProduto->select('nome')
+                    ->whereColumn('produto.id', 'compra.id_produto')
+
+            ])
+            ->get(),
+
+            'attributes' => ['user','product','quantidade'],
+            'labels' => ['Usuário', 'Produto', 'Quantidade']
+        ]);
     }
 
     /**
@@ -46,15 +64,43 @@ class CompraController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function loadform() {
+        return view("main_views/insert", [
+            'pagename' => 'Inserir Compra',
+
+            'fields' => [
+
+                'id_user' => [
+                    'element' => 'select',
+                    'options' => $this->objUser->select('nome', 'id')->orderBy('id')->get()
+                ],
+                'id_produto' => [
+                    'element' => 'select',
+                    'options' => $this->objProduto->select('nome', 'id')->orderBy('id')->get()
+                ],
+
+                'quantidade' => [
+                    'element' => 'input',
+                    'type' => 'number'
+                ]
+            ],
+
+            'attributes' => ['id_user', 'id_produto', 'quantidade'],
+            'labels' => ['Cliente', 'Produto', 'Quantidade'],
+            'method' => 'POST',
+            'action' => '/compra/inserir/action'
+        ]);
+    }
+
     public function store(Request $request)
     {
-        $cad = $this->objUser->create([
+        $cad = $this->objCompra->create([
             'id_user'=>$request->id_user,
             'id_produto'=>$request->id_produto,
             'quantidade'=>$request->quantidade
             ]);
             if($cad)
-                return redirect("/");
+                return redirect("/compras");
     }
 
     /**
@@ -86,6 +132,34 @@ class CompraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    public function loadformupdate($id) {
+        return view("main_views/insert", [
+            'pagename' => 'Editar Compra',
+
+            'fields' => [
+
+                'id_user' => [
+                    'element' => 'select',
+                    'options' => $this->objUser->select('nome', 'id')->orderBy('id')->get()
+                ],
+                'id_produto' => [
+                    'element' => 'select',
+                    'options' => $this->objProduto->select('nome', 'id')->orderBy('id')->get()
+                ],
+
+                'quantidade' => [
+                    'element' => 'input',
+                    'type' => 'number'
+                ]
+            ],
+
+            'attributes' => ['id_user', 'id_produto', 'quantidade'],
+            'labels' => ['Cliente', 'Produto', 'Quantidade'],
+            'method' => 'POST',
+            'action' => '/compra/editar/action/' . $id
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $this->objCompra->where(['id'=>$id])->update([
@@ -94,7 +168,7 @@ class CompraController extends Controller
             'quantidade'=>$request->quantidade
         ]);
 
-        return redirect("/");
+        return redirect("/compras");
     }
 
     /**

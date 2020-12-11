@@ -19,7 +19,13 @@ class ProdutoController extends Controller
      */
     public function index()
     {
-        return view("");
+        return view("main_views/list", [
+            'type' => 'produto',
+            'pagename' => 'Listar Produtos',
+            'objects' => $this->objProduto->all(),
+            'attributes' => ['nome','preco','descricao'],
+            'labels' => ['Nome', 'Preço', 'Descrição']
+        ]);
     }
 
     /**
@@ -38,15 +44,41 @@ class ProdutoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function loadform() {
+        return view("main_views/insert", [
+            'pagename' => 'Inserir Produto',
+
+            'fields' => [
+                'nome' => [
+                    'element' => 'input',
+                    'type' => 'text'
+                ],
+                'preco' => [
+                    'element' => 'input',
+                    'type' => 'number'
+                ],
+                'descricao' => [
+                    'element' => 'input',
+                    'type' => 'text'
+                ]
+            ],
+
+            'attributes' => ['nome', 'preco', 'descricao'],
+            'labels' => ['Nome', 'Preço', 'Descrição'],
+            'method' => 'POST',
+            'action' => '/produto/inserir/action/'
+        ]);
+    }
+    
     public function store(Request $request)
     {
-        $cad = $this->objUser->create([
+        $cad = $this->objProduto->create([
             'nome'=>$request->nome,
             'preco'=>$request->preco,
             'descricao'=>$request->descricao
             ]);
             if($cad)
-                return redirect("/");
+                return redirect("/produtos");
     }
 
     /**
@@ -79,6 +111,32 @@ class ProdutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    public function loadformupdate($id) {
+        return view("main_views/insert", [
+            'pagename' => 'Editar Produto',
+
+            'fields' => [
+                'nome' => [
+                    'element' => 'input',
+                    'type' => 'text'
+                ],
+                'preco' => [
+                    'element' => 'input',
+                    'type' => 'number'
+                ],
+                'descricao' => [
+                    'element' => 'input',
+                    'type' => 'text'
+                ]
+            ],
+
+            'attributes' => ['nome', 'preco', 'descricao'],
+            'labels' => ['Nome', 'Preço', 'Descrição'],
+            'method' => 'POST',
+            'action' => '/produto/editar/action/' . $id
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $this->objProduto->where(['id'=>$id])->update([
@@ -87,7 +145,7 @@ class ProdutoController extends Controller
             'descricao'=>$request->descricao
         ]);
 
-        return redirect("/");
+        return redirect("/produtos");
     }
 
     /**

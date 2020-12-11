@@ -21,8 +21,13 @@ class UserController extends Controller
      */
     public function index() 
     {
-        dd($this->objUser->find(1)->relCompras());
- 
+        return view("main_views/list", [
+            'type' => 'cliente',
+            'pagename' => 'Listar Clientes',
+            'objects' => $this->objUser->all(),
+            'attributes' => ['nome', 'email', 'senha'],
+            'labels' => ['Nome', 'E-mail', 'Senha']
+        ]);
     }
 
     /**
@@ -41,6 +46,32 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function loadform() {
+        return view("main_views/insert", [
+            'pagename' => 'Inserir Cliente',
+
+            'fields' => [
+                'nome' => [
+                    'element' => 'input',
+                    'type' => 'text'
+                ],
+                'email' => [
+                    'element' => 'input',
+                    'type' => 'email'
+                ],
+                'senha' => [
+                    'element' => 'input',
+                    'type' => 'password'
+                ]
+            ],
+
+            'attributes' => ['nome', 'email', 'senha'],
+            'labels' => ['Nome', 'E-mail', 'Senha'],
+            'method' => 'POST',
+            'action' => '/cliente/inserir/action/'
+        ]);
+    }
+
     public function store(Request $request)
     {
         $cad = $this->objUser->create([
@@ -49,7 +80,7 @@ class UserController extends Controller
         'senha'=>$request->senha
         ]);
         if($cad)
-            return redirect("/");
+            return redirect("/clientes");
     }
 
     /**
@@ -82,6 +113,32 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    public function loadformupdate($id) {
+        return view("main_views/insert", [
+            'pagename' => 'Editar Cliente',
+
+            'fields' => [
+                'nome' => [
+                    'element' => 'input',
+                    'type' => 'text'
+                ],
+                'email' => [
+                    'element' => 'input',
+                    'type' => 'email'
+                ],
+                'senha' => [
+                    'element' => 'input',
+                    'type' => 'password'
+                ]
+            ],
+
+            'attributes' => ['nome', 'email', 'senha'],
+            'labels' => ['Nome', 'E-mail', 'Senha'],
+            'method' => 'POST',
+            'action' => '/cliente/editar/action/' . $id
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $this->objUser->where(['id'=>$id])->update([
@@ -90,7 +147,7 @@ class UserController extends Controller
             'senha'=>$request->senha
         ]);
 
-        return redirect("/");
+        return redirect("/clientes");
     }
 
     /**
